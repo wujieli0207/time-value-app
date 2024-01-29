@@ -1,5 +1,8 @@
 import dayjs, { ConfigType } from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { DateFormatEnum } from '@/enums/global'
+
+dayjs.extend(utc)
 
 /**
  * @description 日期格式化
@@ -9,7 +12,7 @@ export function dateFormat(
   fmt = DateFormatEnum.DATE
 ): string {
   if (date) {
-    const result = dayjs(date).format(fmt)
+    const result = dayjs(date).utc().format(fmt)
     return result === 'Invalid date' ? '' : result
   }
 

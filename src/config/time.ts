@@ -2,24 +2,29 @@ import { StatusEnum } from '@/enums/time'
 
 export const catagoryConfig = [
   {
-    value: 'work',
+    value: 0,
+    label: '未分类',
+    color: 'gray',
+  },
+  {
+    value: 1,
     label: '工作',
     color: 'red',
   },
   {
-    value: 'improve',
+    value: 2,
     label: '自我提升',
     color: 'blue',
   },
   {
-    value: 'live',
+    value: 3,
     label: '生活',
     color: 'green',
   },
   {
-    value: 'boring',
+    value: 4,
     label: '无聊',
-    color: 'gray',
+    color: 'yellow',
   },
 ]
 

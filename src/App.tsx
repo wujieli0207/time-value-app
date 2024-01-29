@@ -1,11 +1,14 @@
-import { Button, Form, Input, DatePicker, Select, Space } from 'antd'
+import { Button, Form, Input, DatePicker, Select, Space, message } from 'antd'
 import { useMemo, useState } from 'react'
 import { dateFormat, generateTimesGap } from '@/utils'
 import { ITimeInterface } from '#/time'
 import { catagoryConfig, statusConfig } from '@/config/time'
 import { StatusEnum } from '@/enums/time'
 import dayjs from 'dayjs'
-import { DateFormatEnum } from './enums/global'
+import { DateFormatEnum } from '@/enums/global'
+import { ResultEnum } from '@/enums/common'
+import { ICreateTimeLogParams, createTimeLogApi } from '@/api/module/timeLog'
+import { omit } from 'lodash-es'
 
 interface FieldType
   extends Pick<ITimeInterface, 'catagoryId' | 'description' | 'status'> {
@@ -15,32 +18,62 @@ interface FieldType
   endTime: string
 }
 
+const ORIGIN_FORM_DATA: FieldType = {
+  startDate: dateFormat(dayjs(), DateFormatEnum.DATE),
+  startTime: '',
+  endDate: dateFormat(dayjs(), DateFormatEnum.DATE),
+  endTime: '',
+  catagoryId: 0,
+  description: '',
+  status: StatusEnum.MIDDLE,
+}
+
 function App() {
-  const [form, setForm] = useState<FieldType>({
-    startDate: dateFormat(dayjs(), DateFormatEnum.DATE),
-    startTime: '',
-    endDate: dateFormat(dayjs(), DateFormatEnum.DATE),
-    endTime: '',
-    catagoryId: '',
-    description: '',
-    status: StatusEnum.MIDDLE,
-  })
+  const [form] = Form.useForm()
+
+  const [formValue, setFormValue] = useState<FieldType>(ORIGIN_FORM_DATA)
 
   const timeRange = useMemo(() => {
     return generateTimesGap()
   }, [])
 
   function handleFormChange(value: string, field: keyof FieldType) {
-    console.log('value: ', value)
-    setForm((prev) => ({ ...prev, [field]: value }))
+    setFormValue((prev) => ({ ...prev, [field]: value }))
+  }
+
+  async function handleSubmit() {
+    const saveParams: ICreateTimeLogParams = {
+      start: dateFormat(
+        `${formValue.startDate} ${formValue.startTime}`,
+        DateFormatEnum.DATE_MINUTE
+      ),
+      end: dateFormat(
+        `${formValue.endDate} ${formValue.endTime}`,
+        DateFormatEnum.DATE_MINUTE
+      ),
+      ...omit(formValue, ['startDate', 'startTime', 'endDate', 'endTime']),
+    }
+
+    try {
+      if (await form.validateFields()) {
+        const result = await createTimeLogApi(saveParams)
+        if (result.status === ResultEnum.SUCCESS) {
+          message.success('保存成功')
+          setFormValue(ORIGIN_FORM_DATA)
+          form.resetFields()
+        }
+      }
+    } catch (error) {
+      console.error('error: ', error)
+    }
   }
 
   return (
     <div className="p-4">
-      <Form layout="vertical">
+      <Form form={form} layout="vertical">
         <Form.Item<FieldType> name="startDate" label="开始日期">
           <DatePicker
-            defaultValue={dayjs(form.startDate)}
+            defaultValue={dayjs(formValue.startDate)}
             className="w-full"
             onChange={(value) =>
               handleFormChange(
@@ -50,7 +83,11 @@ function App() {
             }
           />
         </Form.Item>
-        <Form.Item<FieldType> name="startTime" label="开始时间">
+        <Form.Item<FieldType>
+          name="startTime"
+          label="开始时间"
+          rules={[{ required: true, message: '开始时间必填' }]}
+        >
           <Select
             options={timeRange}
             onChange={(value) => handleFormChange(value, 'startTime')}
@@ -58,7 +95,7 @@ function App() {
         </Form.Item>
         <Form.Item<FieldType> name="endDate" label="结束日期">
           <DatePicker
-            defaultValue={dayjs(form.endDate)}
+            defaultValue={dayjs(formValue.endDate)}
             className="w-full"
             onChange={(value) =>
               handleFormChange(
@@ -68,14 +105,22 @@ function App() {
             }
           />
         </Form.Item>
-        <Form.Item<FieldType> name="endTime" label="结束时间">
+        <Form.Item<FieldType>
+          name="endTime"
+          label="结束时间"
+          rules={[{ required: true, message: '开始时间必填' }]}
+        >
           <Select
             options={timeRange}
             onChange={(value) => handleFormChange(value, 'endTime')}
           />
         </Form.Item>
 
-        <Form.Item<FieldType> name="catagoryId" label="分组">
+        <Form.Item<FieldType>
+          name="catagoryId"
+          label="分类"
+          rules={[{ required: true, message: '分类必填' }]}
+        >
           <Select onChange={(value) => handleFormChange(value, 'catagoryId')}>
             {catagoryConfig.map((item) => (
               <Select.Option key={item.value} value={item.value}>
@@ -93,7 +138,7 @@ function App() {
 
         <Form.Item<FieldType> name="status" label="状态">
           <Select
-            defaultValue={form.status}
+            defaultValue={formValue.status}
             onChange={(value) => handleFormChange(value, 'status')}
           >
             {statusConfig.map((item) => (
@@ -112,7 +157,12 @@ function App() {
         </Form.Item>
       </Form>
 
-      <Button type="primary" size="large" className="w-full">
+      <Button
+        type="primary"
+        size="large"
+        className="w-full"
+        onClick={handleSubmit}
+      >
         提交
       </Button>
     </div>

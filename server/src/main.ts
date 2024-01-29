@@ -27,8 +27,19 @@ async function bootstrap() {
 
   // 跨域设置，启用 CORS
   app.enableCors({
-    origin: 'http://127.0.0.1:5173', // 指定允许的源，应与前端应用的地址匹配
-    credentials: true, // 允许跨域请求携带凭证
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+        'http://localhost:3000',
+      ];
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
   });
 
   await app.listen(3000);

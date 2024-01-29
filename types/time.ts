@@ -1,9 +1,10 @@
 import { StatusEnum } from '@/enums/time'
 
 export interface ITimeInterface {
-  startDateTime: Date
-  endDateTime: Date
-  catagoryId: string
+  id: number
+  start: string
+  end: string
+  catagoryId: number
   status: StatusEnum
   description: string
 }
