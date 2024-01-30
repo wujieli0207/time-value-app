@@ -12,6 +12,10 @@ import { TimeLogModule } from './modules/time-log/time-log.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // 设置为全局可用的配置
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? '.env.production'
+          : '.env.development',
     }),
     SharedModule,
     DatabaseModule,
