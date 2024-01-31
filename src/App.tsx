@@ -9,6 +9,7 @@ import { DateFormatEnum } from '@/enums/global'
 import { ResultEnum } from '@/enums/common'
 import { ICreateTimeLogParams, createTimeLogApi } from '@/api/module/timeLog'
 import { omit } from 'lodash-es'
+import { DayView } from '@/components/Schedule'
 
 interface FieldType
   extends Pick<ITimeInterface, 'catagoryId' | 'description' | 'status'> {
@@ -70,7 +71,8 @@ function App() {
 
   return (
     <div className="p-4">
-      <Form form={form} layout="vertical">
+      <DayView />
+      {/* <Form form={form} layout="vertical">
         <Form.Item<FieldType> name="startDate" label="开始日期">
           <DatePicker
             defaultValue={dayjs(formValue.startDate)}
@@ -164,7 +166,7 @@ function App() {
         onClick={handleSubmit}
       >
         提交
-      </Button>
+      </Button> */}
     </div>
   )
 }

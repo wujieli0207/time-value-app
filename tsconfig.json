@@ -32,8 +32,7 @@
     "src/**/*.tsx",
     "types/**/*.ts",
     "types/**/*.d.ts",
-    "vite.config.ts",
-    "src/routers/routes.tsx.bak"
+    "vite.config.ts"
   ],
   "exclude": ["node_modules", "dist", "**/*.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
