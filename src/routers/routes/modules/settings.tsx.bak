@@ -1,0 +1,22 @@
+import { lazy } from 'react'
+import lazyLoad from '@/utils/lazyLoad'
+import { IRouteObject } from '@/routers/interface'
+import { LayoutIndex } from '@/routers/constant'
+
+export const settings: IRouteObject[] = [
+  {
+    element: <LayoutIndex />,
+    path: '/settings',
+    children: [
+      {
+        path: 'account',
+        element: lazyLoad(lazy(() => import('@/pages/settings/account'))),
+        meta: {
+          title: '账号详情',
+        },
+      },
+    ],
+  },
+]
+
+export default settings

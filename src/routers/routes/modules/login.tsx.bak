@@ -1,0 +1,17 @@
+import { lazy } from 'react'
+import lazyLoad from '@/utils/lazyLoad'
+import { IRouteObject } from '@/routers/interface'
+import { LOGIN_URL } from '@/config/globalConfig'
+
+export const login: IRouteObject[] = [
+  {
+    path: LOGIN_URL,
+    element: lazyLoad(lazy(() => import('@/pages/login/index'))),
+    meta: {
+      title: '登陆',
+      requiresAuth: false,
+    },
+  },
+]
+
+export default login
